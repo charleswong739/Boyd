@@ -14,7 +14,7 @@ public class Spawner : MonoBehaviour
     void Awake()
     {
         for (int i = 0; i < numBoids; i++) {
-            Boid b = Object.Instantiate(boid);
+            Boid b = Object.Instantiate(boid, transform);
             b.transform.position = transform.position + (Random.insideUnitSphere * spawnRadius);;
             b.transform.forward = Random.insideUnitSphere;
         }
