@@ -20,8 +20,8 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, new Vector3(30, 30, 30));
-    }
+    // void OnDrawGizmos() {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawWireCube(transform.position, new Vector3(30, 30, 30));
+    // }
 }
