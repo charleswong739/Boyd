@@ -307,6 +307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1029471062}
   - component: {fileID: 1029471061}
+  - component: {fileID: 1029471063}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -326,8 +327,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e69a368d4b744912bb15345da8e743b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numBoids: 10
-  spawnRadius: 10
+  numBoids: 100
+  spawnRadius: 15
   boid: {fileID: 7851760745790034828, guid: 0209df68aac314bf494881f6be061cc0, type: 3}
 --- !u!4 &1029471062
 Transform:
@@ -343,6 +344,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1029471063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029471060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1287e97ca135e4456995fe4e2dc33797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1152631168
 GameObject:
   m_ObjectHideFlags: 0

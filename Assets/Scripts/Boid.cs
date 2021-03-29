@@ -61,15 +61,15 @@ public class Boid : MonoBehaviour
         // TODO: collision avoidance!
 
         if (cacheTransform.position.x < -15 || cacheTransform.position.x > 15) {
-            cacheTransform.position = new Vector3(-Mathf.Clamp(cacheTransform.position.x, -15, 15), -cacheTransform.position.y, -cacheTransform.position.z);
+            cacheTransform.position = new Vector3(-Mathf.Clamp(cacheTransform.position.x, -15, 15), cacheTransform.position.y, cacheTransform.position.z);
         }
 
         if (cacheTransform.position.y < -15 || cacheTransform.position.y > 15) {
-            cacheTransform.position = new Vector3(-cacheTransform.position.x, -Mathf.Clamp(cacheTransform.position.y, -15, 15), -cacheTransform.position.z);
+            cacheTransform.position = new Vector3(cacheTransform.position.x, -Mathf.Clamp(cacheTransform.position.y, -15, 15), cacheTransform.position.z);
         }
 
         if (cacheTransform.position.z < -15 || cacheTransform.position.z > 15) {
-            cacheTransform.position = new Vector3(-cacheTransform.position.x, -cacheTransform.position.y, -Mathf.Clamp(cacheTransform.position.z, -15, 15));
+            cacheTransform.position = new Vector3(cacheTransform.position.x, cacheTransform.position.y, -Mathf.Clamp(cacheTransform.position.z, -15, 15));
         }
 
         transform.position = cacheTransform.position;
@@ -78,5 +78,13 @@ public class Boid : MonoBehaviour
 
     private Vector3 SteerTowards(Vector3 v) {
         return Vector3.ClampMagnitude(v.normalized * settings.maxSpeed - velocity, settings.maxSteerForce);
+    }
+
+    void OnDrawGizmosSelected() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, settings.perceptionRadius);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, settings.avoidanceRadius);
     }
 }
