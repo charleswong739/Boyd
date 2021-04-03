@@ -13,7 +13,7 @@ public class BoidManager : MonoBehaviour
         sphereDirs = new Vector3[collisionRayDensity];
 
         for (int i = 0; i < collisionRayDensity; i++) {
-            float phi = Mathf.Acos(1 - (2 * (i + 0.5f) / 300));
+            float phi = Mathf.Acos(1 - ((i + 0.5f) / 150));
             float theta = Mathf.PI * i * (1 + Mathf.Sqrt(5));
 
             float x = Mathf.Cos(theta) * Mathf.Sin(phi);

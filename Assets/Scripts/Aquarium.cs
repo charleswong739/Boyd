@@ -6,7 +6,7 @@ public class Aquarium : MonoBehaviour
 {
     public int aquariumRadius;
 
-    private readonly int colliderHalfWidth = 1;
+    private readonly int colliderHalfWidth = 3;
 
     void Awake() {
         BoxCollider pX = gameObject.AddComponent<BoxCollider>();
@@ -34,8 +34,8 @@ public class Aquarium : MonoBehaviour
         nZ.size = new Vector3(aquariumRadius * 2 + 4, aquariumRadius * 2 + 4, colliderHalfWidth * 2);
     }
 
-    // void OnDrawGizmos() {
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireCube(transform.position, new Vector3(30, 30, 30));
-    // }
+    void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, new Vector3(60, 60, 60));
+    }
 }

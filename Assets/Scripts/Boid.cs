@@ -11,11 +11,13 @@ public class Boid : MonoBehaviour
     // cache
     private Transform cacheTransform;
 
+    private Vector3 colDir;
+
     public void Initialize()
     {
         cacheTransform = transform;
-        velocity = settings.maxSpeed * transform.forward;
-        this.GetComponent<MeshRenderer>().material.color = Random.ColorHSV();
+        velocity = ((settings.maxSpeed + settings.minSpeed) / 2) * transform.forward;
+        this.GetComponent<MeshRenderer>().material.color = Random.ColorHSV(0.669f, 0.833f, 0.9f, 1f, 0.9f, 1f);
     }
 
     public void UpdateBoid(Boid[] flock, Vector3[] sphereDirs)
@@ -30,7 +32,7 @@ public class Boid : MonoBehaviour
         Vector3 sumAvoidance = Vector3.zero;
 
         for (int i = 0; i < flock.Length; i++) {
-            Vector3 posOffset = flock[i].transform.position - transform.position;
+            Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
 
             if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
                 
@@ -45,16 +47,16 @@ public class Boid : MonoBehaviour
             }
         }
 
+        colDir = transform.forward;
         if (DetectCollision()) {
             // Debug.Log("collide");
-            acceleration += SteerTowards(ClearPathDir(sphereDirs)) * settings.collisionAvoidanceWeight;
+            colDir = ClearPathDir(sphereDirs);
+            acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
         }
 
         acceleration += SteerTowards(sumPos/numPercieved) * settings.cohesionWeight;
         acceleration += SteerTowards(sumHeading) * settings.alignWeight;
         acceleration += SteerTowards(sumAvoidance) * settings.avoidanceWeight;
-
-        // Debug.Log("Acceleration " + acceleration);
 
         velocity += acceleration * Time.deltaTime;
         float speed = velocity.magnitude;
@@ -65,20 +67,6 @@ public class Boid : MonoBehaviour
         cacheTransform.position += velocity * Time.deltaTime;
         cacheTransform.forward = dir;
 
-        // TODO: collision avoidance!
-
-        // if (cacheTransform.position.x < -15 || cacheTransform.position.x > 15) {
-        //     cacheTransform.position = new Vector3(-Mathf.Clamp(cacheTransform.position.x, -15, 15), cacheTransform.position.y, cacheTransform.position.z);
-        // }
-
-        // if (cacheTransform.position.y < -15 || cacheTransform.position.y > 15) {
-        //     cacheTransform.position = new Vector3(cacheTransform.position.x, -Mathf.Clamp(cacheTransform.position.y, -15, 15), cacheTransform.position.z);
-        // }
-
-        // if (cacheTransform.position.z < -15 || cacheTransform.position.z > 15) {
-        //     cacheTransform.position = new Vector3(cacheTransform.position.x, cacheTransform.position.y, -Mathf.Clamp(cacheTransform.position.z, -15, 15));
-        // }
-
         transform.position = cacheTransform.position;
         transform.forward = dir;
     }
@@ -88,32 +76,34 @@ public class Boid : MonoBehaviour
     }
 
     private bool DetectCollision() {
-        // return Physics.Raycast(transform.position, transform.forward, settings.collisionAvoidanceRadius, settings.collisionMask);
-        RaycastHit hit;
-        return Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit, settings.collisionAvoidanceRadius, settings.collisionMask);
+        return Physics.Raycast(cacheTransform.position, cacheTransform.forward, settings.collisionAvoidanceRadius, settings.collisionMask);
+        // RaycastHit hit;
+        // return Physics.SphereCast(transform.position, 0.5f, transform.forward, out hit, settings.collisionAvoidanceRadius, settings.collisionMask);
     }
 
     private Vector3 ClearPathDir(Vector3[] sphereDirs) {
         RaycastHit hit;
         for (int i = 0; i < sphereDirs.Length; i++) {
             Vector3 worldDir = cacheTransform.TransformDirection(sphereDirs[i]);
-            // if (!Physics.Raycast(transform.position, worldDir, settings.collisionAvoidanceRadius, settings.collisionMask)) {
-                // return worldDir;
-            // }
-
-            if (!Physics.SphereCast(transform.position, 0.5f, worldDir, 
-            out hit, settings.collisionAvoidanceRadius, settings.collisionMask)) {
+            if (!Physics.Raycast(cacheTransform.position, worldDir, settings.collisionAvoidanceRadius, settings.collisionMask)) {
                 return worldDir;
             }
+
+            // if (!Physics.SphereCast(transform.position, 0.5f, worldDir, 
+            // out hit, settings.collisionAvoidanceRadius, settings.collisionMask)) {
+            //     return worldDir;
+            // }
         }
         return transform.forward;
     }
 
-    void OnDrawGizmosSelected() {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, settings.perceptionRadius);
+    // void OnDrawGizmos() {
+    //     // Gizmos.color = Color.green;
+    //     // Gizmos.DrawWireSphere(transform.position, settings.perceptionRadius);
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, settings.avoidanceRadius);
-    }
+    //     // Gizmos.color = Color.red;
+    //     // Gizmos.DrawWireSphere(transform.position, settings.avoidanceRadius);
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawRay(transform.position, colDir * settings.collisionAvoidanceRadius);
+    // }
 }
