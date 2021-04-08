@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BoidManager : MonoBehaviour
 {
-    private Boid[] flock;
+    private List<Boid> flock;
 
     public int collisionRayDensity = 300;
     private Vector3[] sphereDirs;
@@ -27,8 +27,8 @@ public class BoidManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        flock = FindObjectsOfType<Boid>();
-        for (int i = 0; i < flock.Length; i++) {
+        flock = new List<Boid>(FindObjectsOfType<Boid>());
+        for (int i = 0; i < flock.Count; i++) {
             flock[i].Initialize();
         }
     }
@@ -36,8 +36,15 @@ public class BoidManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < flock.Length; i++) {
+        for (int i = flock.Count - 1; i >= 0; i--) {
             flock[i].UpdateBoid(flock, sphereDirs);
+            Vector3 pos = flock[i].transform.position;
+            if (pos.x < -150 || pos.x > 150 || pos.y < -150 || pos.y > 150) {
+                Boid boyd = flock[i];
+                flock.RemoveAt(i);
+                Object.Destroy(boyd);
+                Debug.Log("Destroyed boid #" + i);
+            }
         }
     }
 }

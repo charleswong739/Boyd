@@ -20,7 +20,7 @@ public class Boid : MonoBehaviour
         this.GetComponent<MeshRenderer>().material.color = Random.ColorHSV(0.669f, 0.833f, 0.9f, 1f, 0.9f, 1f);
     }
 
-    public void UpdateBoid(Boid[] flock, Vector3[] sphereDirs)
+    public void UpdateBoid(List<Boid> flock, Vector3[] sphereDirs)
     {
         Vector3 acceleration = Vector3.zero;
 
@@ -31,7 +31,7 @@ public class Boid : MonoBehaviour
 
         Vector3 sumAvoidance = Vector3.zero;
 
-        for (int i = 0; i < flock.Length; i++) {
+        for (int i = 0; i < flock.Count; i++) {
             Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
 
             if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
@@ -49,7 +49,6 @@ public class Boid : MonoBehaviour
 
         colDir = transform.forward;
         if (DetectCollision()) {
-            // Debug.Log("collide");
             colDir = ClearPathDir(sphereDirs);
             acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
         }
