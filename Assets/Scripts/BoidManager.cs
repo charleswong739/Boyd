@@ -43,7 +43,7 @@ public class BoidManager : MonoBehaviour
                 Boid boyd = flock[i];
                 flock.RemoveAt(i);
                 Object.Destroy(boyd);
-                Debug.Log("Destroyed boid #" + i);
+                // Debug.Log("Destroyed boid #" + i);
             }
         }
     }

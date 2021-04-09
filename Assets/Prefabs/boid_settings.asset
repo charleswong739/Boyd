@@ -16,12 +16,12 @@ MonoBehaviour:
   maxSpeed: 20
   perceptionRadius: 3
   avoidanceRadius: 2
-  collisionAvoidanceRadius: 15
+  collisionAvoidanceRadius: 10
   collisionMask:
     serializedVersion: 2
     m_Bits: 256
-  maxSteerForce: 10
+  maxSteerForce: 5
   avoidanceWeight: 10
   alignWeight: 8
-  cohesionWeight: 4
+  cohesionWeight: 6
   collisionAvoidanceWeight: 150
