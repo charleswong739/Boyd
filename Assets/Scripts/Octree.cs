@@ -8,7 +8,7 @@ public class Octree {
     
     public Octree(Vector3 center, float radius, OctreeSettings settings, IList<TreeMember> collection) {
         root = new Node(center, radius, null, settings, 1);
-        root.Insert(collection);
+        root.BulkInsert(collection);
     }
 }
 
@@ -21,7 +21,7 @@ public class Node {
     private Node parent;
     private Node[] children;
 
-    private TreeMember[] objects;
+    private List<TreeMember> objects;
     private int contains;
     
     private OctreeSettings settings;
@@ -38,7 +38,7 @@ public class Node {
         this.level = lvl;
     }
 
-    public void Insert(IList<TreeMember> collection) {
+    public void BulkInsert(IList<TreeMember> collection) {
         if (collection.Count + contains > settings.maxItemNum) {
 
             if (children is null) {
@@ -57,22 +57,34 @@ public class Node {
 
             for (int i = 0; i < partitions.Length; i++) {
                 if (children[i] is null) {
-                    CreateChildren(i);
+                    CreateChild(i);
                 }
-                children[i].Insert(partitions[i]);
+                children[i].BulkInsert(partitions[i]);
             }
 
             objects = null;
             contains = 0;
         } else {
             if (objects is null) {
-                objects = new TreeMember[settings.maxItemNum];
+                objects = new List<TreeMember>(settings.maxItemNum + 1);
             }
 
             for (int i = 0; i < collection.Count; i++, contains++) {
-                objects[contains] = collection[i];
-                objects[contains].SetNode(this);
+                objects.Add(collection[i]);
+                collection[i].SetNode(this);
             }
+        }
+    }
+
+    public bool InBounds(Vector3 pos) {
+        return pos.x > center.x - radius && pos.x < center.x + radius && pos.y > center.y - radius && pos.y < center.y + radius && pos.z > center.z - radius && pos.z < center.z + radius;
+    }
+
+    public void CheckNode(TreeMember item) {
+        if (!InBounds(item.transform.position)) {
+            objects.Remove(item);
+            contains--;
+            MoveItem(item);
         }
     }
 
@@ -102,47 +114,96 @@ public class Node {
         }
     }
 
-    private void CreateChildren(int i) {
+    protected void MoveItem(TreeMember item) {
+        if (parent.InBounds(item.transform.position)) {
+            parent.Insert(item);
+        } else {
+            parent.MoveItem(item);
+        }
+    }
+
+    private int SortIntoPartition(TreeMember item) {
+        float x = item.transform.position.x;
+        float y = item.transform.position.y;
+        float z = item.transform.position.z;
+
+        if (x > center.x && y > center.y && z > center.z) {
+            return 0;
+        } else if ( x < center.x && y > center.y && z > center.z) {
+            return 1;
+        } else if ( x > center.x && y < center.y && z > center.z) {
+            return 2;
+        } else if ( x < center.x && y < center.y && z > center.z) {
+            return 3;
+        } else if ( x > center.x && y > center.y && z < center.z) {
+            return 4;
+        } else if ( x < center.x && y > center.y && z < center.z) {
+            return 5;
+        } else if ( x > center.x && y < center.y && z < center.z) {
+            return 6;
+        } else if ( x < center.x && y < center.y && z < center.z) {
+            return 7;
+        }
+
+        return 0;
+    }
+
+    protected void Insert(TreeMember item) {
+        if (children != null) {
+            int partNum = SortIntoPartition(item);
+            if (children[partNum] is null) {
+                CreateChild(partNum);
+            }
+            children[partNum].Insert(item);
+        } else {
+            if (contains + 1 > settings.maxItemNum) {
+                int partNum = SortIntoPartition(item);
+
+                children = new Node[8];
+                CreateChild(partNum);
+
+                objects.Add(item);
+                children[partNum].BulkInsert(objects);
+
+                objects = null;
+                contains = 0;
+            } else {
+                if (objects is null) {
+                    objects = new List<TreeMember>(settings.maxItemNum + 1);
+                }
+
+                objects.Add(item);
+                item.SetNode(this);
+                contains++;
+            }
+        }
+    }
+
+    private void CreateChild(int i) {
         switch (i) {
             case 0:
-                if (children[i] is null) {
-                    children[0] = new Node(center + new Vector3(radius / 2, radius / 2, radius / 2), radius / 2, this, settings, level + 1);     // +x +y +z
-                }
+                children[0] = new Node(center + new Vector3(radius / 2, radius / 2, radius / 2), radius / 2, this, settings, level + 1);     // +x +y +z
                 break;
             case 1:
-                if (children[i] is null) {
-                    children[1] = new Node(center + new Vector3(-radius / 2, radius / 2, radius / 2), radius / 2, this, settings, level + 1);    // -x +y +z
-                }
+                children[1] = new Node(center + new Vector3(-radius / 2, radius / 2, radius / 2), radius / 2, this, settings, level + 1);    // -x +y +z
                 break;
             case 2:
-                if (children[i] is null) {
-                    children[2] = new Node(center + new Vector3(radius / 2, -radius / 2, radius / 2), radius / 2, this, settings, level + 1);    // +x -y +z
-                }
+                children[2] = new Node(center + new Vector3(radius / 2, -radius / 2, radius / 2), radius / 2, this, settings, level + 1);    // +x -y +z
                 break;
             case 3:
-                if (children[i] is null) {
-                    children[3] = new Node(center + new Vector3(-radius / 2, -radius / 2, radius / 2), radius / 2, this, settings, level + 1);   // -x -y +z
-                }
+                children[3] = new Node(center + new Vector3(-radius / 2, -radius / 2, radius / 2), radius / 2, this, settings, level + 1);   // -x -y +z
                 break;
             case 4:
-                if (children[i] is null) {
-                    children[4] = new Node(center + new Vector3(radius / 2, radius / 2, -radius / 2), radius / 2, this, settings, level + 1);    // +x +y -z
-                }
+                children[4] = new Node(center + new Vector3(radius / 2, radius / 2, -radius / 2), radius / 2, this, settings, level + 1);    // +x +y -z
                 break;
             case 5:
-                if (children[i] is null) {
-                    children[5] = new Node(center + new Vector3(-radius / 2, radius / 2, -radius / 2), radius / 2, this, settings, level + 1);   // -x +y -z
-                }
+                children[5] = new Node(center + new Vector3(-radius / 2, radius / 2, -radius / 2), radius / 2, this, settings, level + 1);   // -x +y -z
                 break;
             case 6:
-                if (children[i] is null) {
-                    children[6] = new Node(center + new Vector3(radius / 2, -radius / 2, -radius / 2), radius / 2, this, settings, level + 1);   // +x -y -z
-                }
+                children[6] = new Node(center + new Vector3(radius / 2, -radius / 2, -radius / 2), radius / 2, this, settings, level + 1);   // +x -y -z
                 break;
             case 7:
-                if (children[i] is null) {
-                    children[7] = new Node(center + new Vector3(-radius / 2, -radius / 2, -radius / 2), radius / 2, this, settings, level + 1);  // -x -y -z
-                }
+                children[7] = new Node(center + new Vector3(-radius / 2, -radius / 2, -radius / 2), radius / 2, this, settings, level + 1);  // -x -y -z
                 break;
         }
     }

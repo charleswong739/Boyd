@@ -10,6 +10,10 @@ public abstract class TreeMember : MonoBehaviour
         container = node;
     }
 
+    protected void UpdateNode() {
+        container.CheckNode(this);
+    }
+
     void OnDrawGizmos() {
         if (container != null) {
             Gizmos.color = new Color(0, 0, 1, (1 - (1 / container.level)) * 0.25f);

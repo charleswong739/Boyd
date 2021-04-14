@@ -10,7 +10,7 @@ public class Controller : MonoBehaviour
     public TreeMember thing;
 
     void Awake() {
-        TreeMember[] o = new TreeMember[50];
+        TreeMember[] o = new TreeMember[2];
 
         for (int i = 0; i < o.Length; i++) {
             o[i] = Object.Instantiate(thing, transform);
