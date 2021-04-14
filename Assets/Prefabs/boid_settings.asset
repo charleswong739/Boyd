@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7632c34986c947d4b11bed0bf2f1fc9, type: 3}
-  m_Name: settings
+  m_Name: boid_settings
   m_EditorClassIdentifier: 
   minSpeed: 10
   maxSpeed: 20
