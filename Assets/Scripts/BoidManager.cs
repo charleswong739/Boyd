@@ -6,6 +6,7 @@ public class BoidManager : MonoBehaviour
 {
     private Octree ot;
     public OctreeSettings octreeSettings;
+    public float aquaRadius;
 
     private Boid[] flock;
 
@@ -35,7 +36,7 @@ public class BoidManager : MonoBehaviour
             flock[i].Initialize();
         }
 
-        ot = new Octree(transform.position, 30, octreeSettings, flock);
+        ot = new Octree(transform.position, aquaRadius, octreeSettings, flock);
     }
 
     // Update is called once per frame

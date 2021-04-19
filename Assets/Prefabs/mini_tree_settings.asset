@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db40e32e09409423398beeef20777876, type: 3}
-  m_Name: octree_settings
+  m_Name: mini_tree_settings
   m_EditorClassIdentifier: 
   maxItemNum: 20
-  minItemNum: 5
+  minItemNum: 8
