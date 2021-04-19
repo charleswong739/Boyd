@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boid : MonoBehaviour
+public class Boid : TreeMember
 {
     public BoidSettings settings;
 
@@ -20,8 +20,10 @@ public class Boid : MonoBehaviour
         this.GetComponent<MeshRenderer>().material.color = Random.ColorHSV(0.669f, 0.833f, 0.9f, 1f, 0.9f, 1f);
     }
 
-    public void UpdateBoid(List<Boid> flock, Vector3[] sphereDirs)
+    public void UpdateBoid(Vector3[] sphereDirs)
     {
+        List<TreeMember> flock = container.GetSurroundingItems();
+
         Vector3 acceleration = Vector3.zero;
 
         Vector3 sumPos = Vector3.zero;

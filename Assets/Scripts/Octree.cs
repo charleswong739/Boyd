@@ -18,9 +18,9 @@ public class Octree {
 
 public class Node {
     
-    public Vector3 center {get;}
-    public float radius {get;}
-    public int level{get;}
+    private Vector3 center {get;}
+    private float radius {get;}
+    private int level{get;}
 
     private Node parent;
     private Node[] children;
@@ -93,6 +93,14 @@ public class Node {
         }
     }
 
+    public List<TreeMember> GetSurroundingItems() {
+        if (parent != null) {
+            return parent.GetSubTrees();
+        } else {
+            return objects;
+        }
+    }
+
     private void SortIntoPartition(IList<TreeMember> objects, ref List<TreeMember>[] partitions) {
         for (int i = 0; i < objects.Count; i++) {
             float x = objects[i].transform.position.x;
@@ -119,11 +127,15 @@ public class Node {
         }
     }
 
-    protected void MoveItem(TreeMember item) {
-        if (parent.InBounds(item.transform.position)) {
-            parent.Insert(item);
+    private void MoveItem(TreeMember item) {
+        if (parent != null) {
+            if (parent.InBounds(item.transform.position)) {
+                parent.Insert(item);
+            } else {
+                parent.MoveItem(item);
+            }
         } else {
-            parent.MoveItem(item);
+            item.SetNode(null);
         }
     }
 
@@ -153,7 +165,7 @@ public class Node {
         return 0;
     }
 
-    protected void Insert(TreeMember item) {
+    private void Insert(TreeMember item) {
         if (children != null) {
             int partNum = SortIntoPartition(item);
             if (children[partNum] is null) {
@@ -165,7 +177,7 @@ public class Node {
         }
     }
 
-    protected void MergeSubTrees() {
+    private void MergeSubTrees() {
         objects = new List<TreeMember>(GetSubTrees());
         contains = objects.Count;
         children = null;
@@ -175,7 +187,7 @@ public class Node {
         }
     }
 
-    protected List<TreeMember> GetSubTrees() {
+    private List<TreeMember> GetSubTrees() {
         if (children is null) {
             return objects;
         } else{
@@ -189,7 +201,7 @@ public class Node {
         }
     }
 
-    protected void CheckMerge() {
+    private void CheckMerge() {
         if (parent != null && parent.GetCount() < settings.minItemNum) {
             parent.CheckMerge();
         } else if (children != null) {
@@ -197,7 +209,7 @@ public class Node {
         }
     }
 
-    protected int GetCount() {
+    private int GetCount() {
         if (children is null) {
             return contains;
         } else{

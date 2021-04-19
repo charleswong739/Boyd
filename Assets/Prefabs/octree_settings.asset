@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db40e32e09409423398beeef20777876, type: 3}
   m_Name: octree_settings
   m_EditorClassIdentifier: 
-  maxItemNum: 1
-  minItemNum: 1
+  maxItemNum: 40
+  minItemNum: 10

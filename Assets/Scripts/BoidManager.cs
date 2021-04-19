@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class BoidManager : MonoBehaviour
 {
-    private List<Boid> flock;
+    private Octree ot;
+    public OctreeSettings octreeSettings;
+
+    private Boid[] flock;
 
     public int collisionRayDensity = 300;
     private Vector3[] sphereDirs;
@@ -27,24 +30,26 @@ public class BoidManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        flock = new List<Boid>(FindObjectsOfType<Boid>());
-        for (int i = 0; i < flock.Count; i++) {
+        flock = FindObjectsOfType<Boid>();
+        for (int i = 0; i < flock.Length; i++) {
             flock[i].Initialize();
         }
+
+        ot = new Octree(transform.position, 30, octreeSettings, flock);
     }
 
     // Update is called once per frame
     void Update()
     {
-        for (int i = flock.Count - 1; i >= 0; i--) {
-            flock[i].UpdateBoid(flock, sphereDirs);
-            Vector3 pos = flock[i].transform.position;
-            if (pos.x < -150 || pos.x > 150 || pos.y < -150 || pos.y > 150) {
-                Boid boyd = flock[i];
-                flock.RemoveAt(i);
-                Object.Destroy(boyd);
-                // Debug.Log("Destroyed boid #" + i);
-            }
+        for (int i = 0; i < flock.Length; i++) {
+            flock[i].UpdateBoid(sphereDirs);
+            // Vector3 pos = flock[i].transform.position;
+            // if (pos.x < -150 || pos.x > 150 || pos.y < -150 || pos.y > 150) {
+            //     Boid boyd = flock[i];
+            //     flock.RemoveAt(i);
+            //     Object.Destroy(boyd);
+            //     // Debug.Log("Destroyed boid #" + i);
+            // }
         }
     }
 }
