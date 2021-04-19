@@ -4,7 +4,5 @@ using UnityEngine;
 
 public class Sphere : TreeMember
 {
-    void Update() {
-        UpdateNode();
-    }
+    
 }

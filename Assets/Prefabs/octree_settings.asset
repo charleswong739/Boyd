@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: octree_settings
   m_EditorClassIdentifier: 
   maxItemNum: 1
+  minItemNum: 1

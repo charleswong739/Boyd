@@ -10,7 +10,7 @@ public abstract class TreeMember : MonoBehaviour
         container = node;
     }
 
-    protected void UpdateNode() {
+    public void UpdateNode() {
         container.CheckNode(this);
     }
 

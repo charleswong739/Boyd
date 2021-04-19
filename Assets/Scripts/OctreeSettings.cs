@@ -6,4 +6,5 @@ using UnityEngine;
 public class OctreeSettings : ScriptableObject
 {
     public int maxItemNum;
+    public int minItemNum;
 }

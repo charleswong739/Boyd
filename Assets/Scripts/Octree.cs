@@ -10,6 +10,10 @@ public class Octree {
         root = new Node(center, radius, null, settings, 1);
         root.BulkInsert(collection);
     }
+
+    public void Draw() {
+        root.Draw();
+    }
 }
 
 public class Node {
@@ -22,7 +26,7 @@ public class Node {
     private Node[] children;
 
     private List<TreeMember> objects;
-    private int contains;
+    private int contains {get; set;}
     
     private OctreeSettings settings;
 
@@ -56,10 +60,10 @@ public class Node {
             SortIntoPartition(collection, ref partitions);
 
             for (int i = 0; i < partitions.Length; i++) {
-                if (children[i] is null) {
+                if (children[i] is null && partitions[i].Count > 0) {
                     CreateChild(i);
+                    children[i].BulkInsert(partitions[i]);
                 }
-                children[i].BulkInsert(partitions[i]);
             }
 
             objects = null;
@@ -85,6 +89,7 @@ public class Node {
             objects.Remove(item);
             contains--;
             MoveItem(item);
+            CheckMerge();
         }
     }
 
@@ -156,26 +161,59 @@ public class Node {
             }
             children[partNum].Insert(item);
         } else {
-            if (contains + 1 > settings.maxItemNum) {
-                int partNum = SortIntoPartition(item);
+            BulkInsert(new TreeMember[] {item});
+        }
+    }
 
-                children = new Node[8];
-                CreateChild(partNum);
+    protected void MergeSubTrees() {
+        objects = new List<TreeMember>(GetSubTrees());
+        contains = objects.Count;
+        children = null;
 
-                objects.Add(item);
-                children[partNum].BulkInsert(objects);
+        for (int i = 0; i < contains; i++) {
+            objects[i].SetNode(this);
+        }
+    }
 
-                objects = null;
-                contains = 0;
-            } else {
-                if (objects is null) {
-                    objects = new List<TreeMember>(settings.maxItemNum + 1);
+    protected List<TreeMember> GetSubTrees() {
+        if (children is null) {
+            return objects;
+        } else{
+            List<TreeMember> childObjects = new List<TreeMember>();
+            for (int i = 0; i < 8; i++) {
+                if (children[i] != null) {
+                    childObjects.AddRange(children[i].GetSubTrees());
                 }
-
-                objects.Add(item);
-                item.SetNode(this);
-                contains++;
             }
+            return childObjects;
+        }
+    }
+
+    protected void CheckMerge() {
+        if (parent != null && parent.GetCount() < settings.minItemNum) {
+            parent.CheckMerge();
+        } else if (children != null) {
+            MergeSubTrees();
+        }
+    }
+
+    protected int GetCount() {
+        if (children is null) {
+            return contains;
+        } else{
+            int count = 0;
+            for (int i = 0; i < 8; i++) {
+                if (children[i] != null) {
+                    int diff = children[i].GetCount();
+
+                    if (diff == 0) {
+                        children[i] = null;
+                    }
+
+                    count += diff;
+                }
+            }
+            return count;
         }
     }
 
@@ -205,6 +243,18 @@ public class Node {
             case 7:
                 children[7] = new Node(center + new Vector3(-radius / 2, -radius / 2, -radius / 2), radius / 2, this, settings, level + 1);  // -x -y -z
                 break;
+        }
+    }
+
+    public void Draw() {
+        Gizmos.color = new Color(0, 1, 0, (1 - (1 / level)) * 0.25f);
+        Gizmos.DrawCube(center, new Vector3(radius * 2, radius * 2, radius * 2));
+        if (children != null) {
+            for (int i = 0; i < 8; i++) {
+                if (children[i] != null) {
+                    children[i].Draw();
+                }
+            }
         }
     }
 }

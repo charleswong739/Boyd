@@ -8,9 +8,10 @@ public class Controller : MonoBehaviour
     public OctreeSettings settings;
 
     public TreeMember thing;
+    private TreeMember[] o;
 
     void Awake() {
-        TreeMember[] o = new TreeMember[2];
+        o = new TreeMember[12];
 
         for (int i = 0; i < o.Length; i++) {
             o[i] = Object.Instantiate(thing, transform);
@@ -20,8 +21,18 @@ public class Controller : MonoBehaviour
         ot = new Octree(transform.position, 30, settings, o);
     }
 
+    void Update() {
+        for (int i = 0; i < o.Length; i++) {
+            o[i].UpdateNode();
+        }
+    }
+
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position, new Vector3(60, 60, 60));
+
+        if (ot != null) {
+            ot.Draw();
+        }
     }
 }
