@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7632c34986c947d4b11bed0bf2f1fc9, type: 3}
   m_Name: mini_boid_settings
   m_EditorClassIdentifier: 
-  minSpeed: 10
-  maxSpeed: 20
+  minSpeed: 8
+  maxSpeed: 15
   perceptionRadius: 7
   avoidanceRadius: 2
   collisionAvoidanceRadius: 10
@@ -23,5 +23,5 @@ MonoBehaviour:
   maxSteerForce: 5
   avoidanceWeight: 10
   alignWeight: 8
-  cohesionWeight: 2
+  cohesionWeight: 0
   collisionAvoidanceWeight: 150

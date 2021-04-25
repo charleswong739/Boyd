@@ -18,9 +18,9 @@ public class Octree {
 
 public class Node {
     
-    private Vector3 center {get;}
-    private float radius {get;}
-    private int level{get;}
+    public Vector3 center;
+    private float radius;
+    private int level;
 
     private Node parent;
     private Node[] children;
@@ -259,14 +259,15 @@ public class Node {
     }
 
     public void Draw() {
-        Gizmos.color = new Color(0, 1, 0, (1 - (1 / level)) * 0.25f);
+        // Gizmos.color = new Color(0, 1, 0, (1 - (1 / level)) * 0.25f);
+        Gizmos.color = Color.red;
         Gizmos.DrawCube(center, new Vector3(radius * 2, radius * 2, radius * 2));
-        if (children != null) {
-            for (int i = 0; i < 8; i++) {
-                if (children[i] != null) {
-                    children[i].Draw();
-                }
-            }
-        }
+        // if (children != null) {
+        //     for (int i = 0; i < 8; i++) {
+        //         if (children[i] != null) {
+        //             children[i].Draw();
+        //         }
+        //     }
+        // }
     }
 }
