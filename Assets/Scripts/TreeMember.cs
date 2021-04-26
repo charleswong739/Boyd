@@ -5,6 +5,8 @@ using UnityEngine;
 public abstract class TreeMember : MonoBehaviour
 {
     protected Node container;
+    public int id {get; set;}
+    public int nodeId {get; set;}
 
     public void SetNode(Node node) {
         container = node;

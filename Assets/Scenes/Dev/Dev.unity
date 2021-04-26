@@ -785,7 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e69a368d4b744912bb15345da8e743b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numBoids: 500
+  numBoids: 1000
   spawnRadius: 15
   boid: {fileID: 7851760745790034828, guid: b55818871df7e461fadfaebd07526b1c, type: 3}
 --- !u!4 &1029471062
@@ -816,7 +816,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octreeSettings: {fileID: 11400000, guid: 92ced9c8d378449beaadd24145105701, type: 2}
   aquaRadius: 20
+  settings: {fileID: 11400000, guid: 2059865803cb143f3bfe938ada6b2dca, type: 2}
   collisionRayDensity: 150
+  compute: {fileID: 7200000, guid: 15a23510563c24235a1ff2fadb988f2c, type: 3}
 --- !u!1 &1128966275
 GameObject:
   m_ObjectHideFlags: 0

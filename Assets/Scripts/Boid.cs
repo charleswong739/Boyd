@@ -20,35 +20,34 @@ public class Boid : TreeMember
         this.GetComponent<MeshRenderer>().material.color = Random.ColorHSV(0.669f, 0.833f, 0.9f, 1f, 0.9f, 1f);
     }
 
-    public void UpdateBoid(Vector3[] sphereDirs)
+    public void UpdateBoid(Vector3[] sphereDirs, BoidManager.BoidData data)
     {
-        // if (container != null) {
-        List<TreeMember> flock = container.GetSurroundingItems();
+        // List<TreeMember> flock = container.GetSurroundingItems();
 
         Vector3 acceleration = Vector3.zero;
 
-        Vector3 sumPos = Vector3.zero;
-        int numPercieved = 0;
+        // Vector3 sumPos = Vector3.zero;
+        // int numPercieved = 0;
 
-        Vector3 sumHeading = Vector3.zero;
+        // Vector3 sumHeading = Vector3.zero;
 
-        Vector3 sumAvoidance = Vector3.zero;
+        // Vector3 sumAvoidance = Vector3.zero;
 
-        for (int i = 0; i < flock.Count; i++) {
-            Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
+        // for (int i = 0; i < flock.Count; i++) {
+        //     Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
 
-            if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
+        //     if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
                 
-                if ((posOffset).sqrMagnitude < settings.avoidanceRadius * settings.avoidanceRadius) {
-                    sumAvoidance -= posOffset.normalized;
-                }
+        //         if ((posOffset).sqrMagnitude < settings.avoidanceRadius * settings.avoidanceRadius) {
+        //             sumAvoidance -= posOffset.normalized;
+        //         }
 
-                sumHeading += flock[i].transform.forward;
+        //         sumHeading += flock[i].transform.forward;
 
-                sumPos += flock[i].transform.position;
-                numPercieved++;
-            }
-        }
+        //         sumPos += flock[i].transform.position;
+        //         numPercieved++;
+        //     }
+        // }
 
         colDir = transform.forward;
         if (DetectCollision()) {
@@ -56,9 +55,9 @@ public class Boid : TreeMember
             acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
         }
 
-        acceleration += SteerTowards(sumPos/numPercieved) * settings.cohesionWeight;
-        acceleration += SteerTowards(sumHeading) * settings.alignWeight;
-        acceleration += SteerTowards(sumAvoidance) * settings.avoidanceWeight;
+        acceleration += SteerTowards(data.sumPos/data.numPercieved) * settings.cohesionWeight;
+        acceleration += SteerTowards(data.sumHeading) * settings.alignWeight;
+        acceleration += SteerTowards(data.sumAvoidance) * settings.avoidanceWeight;
 
         velocity += acceleration * Time.deltaTime;
         float speed = velocity.magnitude;
@@ -73,9 +72,6 @@ public class Boid : TreeMember
         transform.forward = dir;
 
         UpdateNode();
-        // } else {
-        //     gameObject.active = false;
-        // }
     }
 
     private Vector3 SteerTowards(Vector3 v) {

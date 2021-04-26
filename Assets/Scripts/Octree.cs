@@ -11,6 +11,13 @@ public class Octree {
         root.BulkInsert(collection);
     }
 
+    public void BuildBuffer(out List<int> nodeIndex, out int[] memberIndex, int numMembers) {
+        nodeIndex = new List<int>();
+        memberIndex = new int[numMembers];
+
+        root.BuildBuffer(ref nodeIndex, ref memberIndex, 0);
+    }
+
     public void Draw() {
         root.Draw();
     }
@@ -40,6 +47,31 @@ public class Node {
 
         this.settings = settings;
         this.level = lvl;
+    }
+
+    internal int BuildBuffer(ref List<int> nodeIndex, ref int[] memberIndex, int lastMember) {
+        if (children != null) {
+            int aggLastMember = lastMember;
+            for (int i = 0; i < 8; i++) {
+                if (children[i] != null) {
+                    aggLastMember = children[i].BuildBuffer(ref nodeIndex, ref memberIndex, aggLastMember);
+                }
+            }
+
+            return aggLastMember;
+        } else {
+            int nodeId = nodeIndex.Count / 2;
+            nodeIndex.Add(lastMember);
+
+            for (int i = 0; i < objects.Count; i++) {
+                memberIndex[i + lastMember] = objects[i].id;
+                objects[i].nodeId = nodeId;
+            }
+
+            nodeIndex.Add(lastMember + objects.Count);
+
+            return lastMember + objects.Count;
+        }
     }
 
     public void BulkInsert(IReadOnlyList<TreeMember> collection) {
@@ -94,11 +126,12 @@ public class Node {
     }
 
     public List<TreeMember> GetSurroundingItems() {
-        if (parent != null) {
-            return parent.GetSubTrees();
-        } else {
-            return objects;
-        }
+        // if (parent != null) {
+        //     return parent.GetSubTrees();
+        // } else {
+        //     return objects;
+        // }
+        return objects;
     }
 
     private void SortIntoPartition(IReadOnlyList<TreeMember> objects, ref List<TreeMember>[] partitions) {

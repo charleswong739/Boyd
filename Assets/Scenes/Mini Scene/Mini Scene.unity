@@ -712,7 +712,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octreeSettings: {fileID: 11400000, guid: ae3cf7df3b4144378bc0bc7935326084, type: 2}
   aquaRadius: 15
+  settings: {fileID: 11400000, guid: a4da2e10c3d30436bb44c2acc8f5cdeb, type: 2}
   collisionRayDensity: 150
+  compute: {fileID: 7200000, guid: 15a23510563c24235a1ff2fadb988f2c, type: 3}
 --- !u!1 &1128966275
 GameObject:
   m_ObjectHideFlags: 0

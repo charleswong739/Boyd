@@ -1,0 +1,45 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct BoidData {
+    int nodeId;
+
+    float3 position;
+    float3 forward;
+
+    float3 sumPos;
+    float3 sumHeading;
+    float3 sumAvoidance;
+
+    int numPercieved;
+};
+
+StructuredBuffer<int> nodeIndexBuffer;
+StructuredBuffer<int> memberIndexBuffer;
+RWStructuredBuffer<BoidData> boidBuffer;
+
+float percepRad;
+float avoidRad;
+
+[numthreads(512,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    for (int i = nodeIndexBuffer[boidBuffer[id.x].nodeId * 2]; i < nodeIndexBuffer[boidBuffer[id.x].nodeId * 2 + 1]; i++) {
+        if (memberIndexBuffer[i] != id.x) {
+            BoidData boid = boidBuffer[memberIndexBuffer[i]];
+
+            float3 offset = boid.position - boidBuffer[id.x].position;
+            float sqrMag = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
+
+            if (sqrMag < percepRad * percepRad) {
+                if (sqrMag < avoidRad * avoidRad) {
+                    boidBuffer[id.x].sumAvoidance -= normalize(offset);
+                }
+
+                boidBuffer[id.x].sumHeading += boid.forward;
+                boidBuffer[id.x].sumPos += boid.position;
+                boidBuffer[id.x].numPercieved += 1;
+            }
+        }
+    }
+}
