@@ -28,4 +28,14 @@ public class fps : MonoBehaviour
         }
 
     }
+
+    public void ToggleVisible() {
+        if (visible) {
+            GetComponent<Text>().enabled = false;
+            visible = false;
+        } else {
+            GetComponent<Text>().enabled = true;
+            visible = true;
+        }
+    }
 }
