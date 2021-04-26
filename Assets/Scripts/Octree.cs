@@ -6,7 +6,7 @@ public class Octree {
 
     private Node root;
     
-    public Octree(Vector3 center, float radius, OctreeSettings settings, IList<TreeMember> collection) {
+    public Octree(Vector3 center, float radius, OctreeSettings settings, IReadOnlyList<TreeMember> collection) {
         root = new Node(center, radius, null, settings, 1);
         root.BulkInsert(collection);
     }
@@ -42,7 +42,7 @@ public class Node {
         this.level = lvl;
     }
 
-    public void BulkInsert(IList<TreeMember> collection) {
+    public void BulkInsert(IReadOnlyList<TreeMember> collection) {
         if (collection.Count + contains > settings.maxItemNum) {
 
             if (children is null) {
@@ -101,7 +101,7 @@ public class Node {
         }
     }
 
-    private void SortIntoPartition(IList<TreeMember> objects, ref List<TreeMember>[] partitions) {
+    private void SortIntoPartition(IReadOnlyList<TreeMember> objects, ref List<TreeMember>[] partitions) {
         for (int i = 0; i < objects.Count; i++) {
             float x = objects[i].transform.position.x;
             float y = objects[i].transform.position.y;
@@ -259,15 +259,15 @@ public class Node {
     }
 
     public void Draw() {
-        // Gizmos.color = new Color(0, 1, 0, (1 - (1 / level)) * 0.25f);
-        Gizmos.color = Color.red;
+        Gizmos.color = new Color(0, 1, 0, (1 - (1 / level)) * 0.25f);
+        // Gizmos.color = Color.red;
         Gizmos.DrawCube(center, new Vector3(radius * 2, radius * 2, radius * 2));
-        // if (children != null) {
-        //     for (int i = 0; i < 8; i++) {
-        //         if (children[i] != null) {
-        //             children[i].Draw();
-        //         }
-        //     }
-        // }
+        if (children != null) {
+            for (int i = 0; i < 8; i++) {
+                if (children[i] != null) {
+                    children[i].Draw();
+                }
+            }
+        }
     }
 }

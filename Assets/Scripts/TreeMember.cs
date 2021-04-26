@@ -16,6 +16,10 @@ public abstract class TreeMember : MonoBehaviour
         }
     }
 
+    public bool OutOfTree() {
+        return container is null;
+    }
+
     // void OnDrawGizmos() {
     //     if (container != null) {
     //         Gizmos.color = new Color(0, 0, 1, (1 - (1 / container.level)) * 0.25f);

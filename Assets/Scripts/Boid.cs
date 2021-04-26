@@ -22,60 +22,60 @@ public class Boid : TreeMember
 
     public void UpdateBoid(Vector3[] sphereDirs)
     {
-        if (container != null) {
-            List<TreeMember> flock = container.GetSurroundingItems();
+        // if (container != null) {
+        List<TreeMember> flock = container.GetSurroundingItems();
 
-            Vector3 acceleration = Vector3.zero;
+        Vector3 acceleration = Vector3.zero;
 
-            Vector3 sumPos = Vector3.zero;
-            int numPercieved = 0;
+        Vector3 sumPos = Vector3.zero;
+        int numPercieved = 0;
 
-            Vector3 sumHeading = Vector3.zero;
+        Vector3 sumHeading = Vector3.zero;
 
-            Vector3 sumAvoidance = Vector3.zero;
+        Vector3 sumAvoidance = Vector3.zero;
 
-            for (int i = 0; i < flock.Count; i++) {
-                Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
+        for (int i = 0; i < flock.Count; i++) {
+            Vector3 posOffset = flock[i].transform.position - cacheTransform.position;
 
-                if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
-                    
-                    if ((posOffset).sqrMagnitude < settings.avoidanceRadius * settings.avoidanceRadius) {
-                        sumAvoidance -= posOffset.normalized;
-                    }
-
-                    sumHeading += flock[i].transform.forward;
-
-                    sumPos += flock[i].transform.position;
-                    numPercieved++;
+            if ((posOffset).sqrMagnitude < settings.perceptionRadius * settings.perceptionRadius) {
+                
+                if ((posOffset).sqrMagnitude < settings.avoidanceRadius * settings.avoidanceRadius) {
+                    sumAvoidance -= posOffset.normalized;
                 }
+
+                sumHeading += flock[i].transform.forward;
+
+                sumPos += flock[i].transform.position;
+                numPercieved++;
             }
-
-            colDir = transform.forward;
-            if (DetectCollision()) {
-                colDir = ClearPathDir(sphereDirs);
-                acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
-            }
-
-            acceleration += SteerTowards(sumPos/numPercieved) * settings.cohesionWeight;
-            acceleration += SteerTowards(sumHeading) * settings.alignWeight;
-            acceleration += SteerTowards(sumAvoidance) * settings.avoidanceWeight;
-
-            velocity += acceleration * Time.deltaTime;
-            float speed = velocity.magnitude;
-            Vector3 dir = velocity / speed;
-            speed = Mathf.Clamp(speed, settings.minSpeed, settings.maxSpeed);
-            velocity = dir * speed;
-
-            cacheTransform.position += velocity * Time.deltaTime;
-            cacheTransform.forward = dir;
-
-            transform.position = cacheTransform.position;
-            transform.forward = dir;
-
-            UpdateNode();
-        } else {
-            gameObject.active = false;
         }
+
+        colDir = transform.forward;
+        if (DetectCollision()) {
+            colDir = ClearPathDir(sphereDirs);
+            acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
+        }
+
+        acceleration += SteerTowards(sumPos/numPercieved) * settings.cohesionWeight;
+        acceleration += SteerTowards(sumHeading) * settings.alignWeight;
+        acceleration += SteerTowards(sumAvoidance) * settings.avoidanceWeight;
+
+        velocity += acceleration * Time.deltaTime;
+        float speed = velocity.magnitude;
+        Vector3 dir = velocity / speed;
+        speed = Mathf.Clamp(speed, settings.minSpeed, settings.maxSpeed);
+        velocity = dir * speed;
+
+        cacheTransform.position += velocity * Time.deltaTime;
+        cacheTransform.forward = dir;
+
+        transform.position = cacheTransform.position;
+        transform.forward = dir;
+
+        UpdateNode();
+        // } else {
+        //     gameObject.active = false;
+        // }
     }
 
     private Vector3 SteerTowards(Vector3 v) {
