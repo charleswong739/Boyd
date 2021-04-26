@@ -10,10 +10,13 @@ public class fps : MonoBehaviour
 
     private float timer;
 
+    private bool visible;
+
     void Awake()
     {
         fpsDisplay = GetComponent<Text>();
         refreshRate = 0.5f;
+        visible = false;
     }
 
     // Update is called once per frame

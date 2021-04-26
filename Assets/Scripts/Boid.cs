@@ -55,9 +55,13 @@ public class Boid : TreeMember
             acceleration += SteerTowards(colDir) * settings.collisionAvoidanceWeight;
         }
 
-        acceleration += SteerTowards(data.sumPos/data.numPercieved) * settings.cohesionWeight;
-        acceleration += SteerTowards(data.sumHeading) * settings.alignWeight;
-        acceleration += SteerTowards(data.sumAvoidance) * settings.avoidanceWeight;
+        if (data.numPercieved > 0) {
+            Vector3 center = data.sumPos / data.numPercieved;
+
+            acceleration += SteerTowards(center - cacheTransform.position) * settings.cohesionWeight;
+            acceleration += SteerTowards(data.sumHeading) * settings.alignWeight;
+            acceleration += SteerTowards(data.sumAvoidance) * settings.avoidanceWeight;
+        }
 
         velocity += acceleration * Time.deltaTime;
         float speed = velocity.magnitude;

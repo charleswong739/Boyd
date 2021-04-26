@@ -14,31 +14,35 @@ struct BoidData {
     int numPercieved;
 };
 
-StructuredBuffer<int> nodeIndexBuffer;
-StructuredBuffer<int> memberIndexBuffer;
+RWStructuredBuffer<int> nodeIndexBuffer;
+RWStructuredBuffer<int> memberIndexBuffer;
 RWStructuredBuffer<BoidData> boidBuffer;
 
 float percepRad;
 float avoidRad;
 
+int numBoids;
+
 [numthreads(512,1,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    for (int i = nodeIndexBuffer[boidBuffer[id.x].nodeId * 2]; i < nodeIndexBuffer[boidBuffer[id.x].nodeId * 2 + 1]; i++) {
-        if (memberIndexBuffer[i] != id.x) {
-            BoidData boid = boidBuffer[memberIndexBuffer[i]];
+    if (id.x < numBoids) {
+        for (int i = nodeIndexBuffer[boidBuffer[id.x].nodeId * 2]; i < nodeIndexBuffer[boidBuffer[id.x].nodeId * 2 + 1]; i++) {
+            if (memberIndexBuffer[i] != id.x) {
+                BoidData boid = boidBuffer[memberIndexBuffer[i]];
 
-            float3 offset = boid.position - boidBuffer[id.x].position;
-            float sqrMag = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
+                float3 offset = boid.position - boidBuffer[id.x].position;
+                float sqrMag = offset.x * offset.x + offset.y * offset.y + offset.z * offset.z;
 
-            if (sqrMag < percepRad * percepRad) {
-                if (sqrMag < avoidRad * avoidRad) {
-                    boidBuffer[id.x].sumAvoidance -= normalize(offset);
+                if (sqrMag < percepRad * percepRad) {
+                    if (sqrMag < avoidRad * avoidRad) {
+                        boidBuffer[id.x].sumAvoidance -= normalize(offset);
+                    }
+
+                    boidBuffer[id.x].sumHeading += boid.forward;
+                    boidBuffer[id.x].sumPos += boid.position;
+                    boidBuffer[id.x].numPercieved += 1;
                 }
-
-                boidBuffer[id.x].sumHeading += boid.forward;
-                boidBuffer[id.x].sumPos += boid.position;
-                boidBuffer[id.x].numPercieved += 1;
             }
         }
     }

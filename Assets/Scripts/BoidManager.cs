@@ -16,6 +16,8 @@ public class BoidManager : MonoBehaviour
 
     public ComputeShader compute;
 
+    private bool updateId;
+
     void Awake() {
         sphereDirs = new Vector3[collisionRayDensity];
 
@@ -37,6 +39,7 @@ public class BoidManager : MonoBehaviour
         flock = new List<Boid>(FindObjectsOfType<Boid>());
         for (int i = 0; i < flock.Count; i++) {
             flock[i].Initialize();
+            flock[i].id = i;
         }
 
         ot = new Octree(transform.position, aquaRadius, octreeSettings, flock);
@@ -46,8 +49,11 @@ public class BoidManager : MonoBehaviour
     void Update()
     {
         // Update boid ids
-        for (int i = 0; i < flock.Count; i++) {
-            flock[i].id = i;
+        if (updateId) {
+            for (int i = 0; i < flock.Count; i++) {
+                flock[i].id = i;
+            }
+            updateId = false;
         }
 
         // Generate nodeIndexData and memberIndexData buffers
@@ -79,6 +85,7 @@ public class BoidManager : MonoBehaviour
 
         compute.SetFloat("percepRad", settings.perceptionRadius);
         compute.SetFloat("avoidRad", settings.avoidanceRadius);
+        compute.SetInt("numBoids", flock.Count);
 
         compute.Dispatch(0, Mathf.CeilToInt(flock.Count / 512f), 1, 1);
 
@@ -93,6 +100,7 @@ public class BoidManager : MonoBehaviour
                 Boid b = flock[i];
                 flock.RemoveAt(i);
                 Object.Destroy(b.gameObject);
+                updateId = true;
             }
         }
 
